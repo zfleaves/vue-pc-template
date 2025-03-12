@@ -5,6 +5,8 @@
   "description": "vue 项目模板",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "husky install",
     "dev": "vite --port 8000 --open",
     "build": "vite build",
     "build-ssg": "vite-ssg build",
