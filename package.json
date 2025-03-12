@@ -15,7 +15,16 @@
     "test:unit": "vitest",
     "up": "taze major -I"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zfleaves/vue-pc-template"
+  },
+  "keywords": [
+    "zfleaves",
+    "vue",
+    "vite",
+    "template"
+  ],
   "author": "zfleaves",
   "license": "ISC",
   "dependencies": {
