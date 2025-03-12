@@ -1,16 +1,17 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { createHead } from '@unhead/vue' // 或 '@vueuse/head'
-import App from './App.vue'
+import { ViteSSG } from 'vite-ssg';
+import App from './App.vue';
+import type { UserModule } from './types';
+import routes from './router/routes';
+console.log('routes: ', routes);
 
 import '@unocss/reset/tailwind.css';
 import './styles/main.css';
 import 'uno.css';
 
-const app = createApp(App)
-const head = createHead()
-// 注入头部管理插件
-app.use(head)
-// 注入状态管理插件
-app.use(createPinia())
-app.mount('#app')
+export const createApp = ViteSSG(App, { routes, base: import.meta.env.BASE_URL }, (ctx) => {
+    // install all modules under `modules/`
+    Object.values(
+        import.meta.glob<{ install: UserModule }>('./modules/*.ts', { eager: true }),
+    ).forEach((i) => i.install?.(ctx));
+    // ctx.app.use(Previewer)
+});

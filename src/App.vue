@@ -1,5 +1,6 @@
 <template>
-  <h1>Hello Vue 3 + TypeScript</h1>
+  <h1 text-center mb-1>Hello Vue 3 + TypeScript</h1>
+  <RouterView />
 </template>
 <script setup lang="ts">
 useHead({

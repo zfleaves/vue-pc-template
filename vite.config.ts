@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import Vue from '@vitejs/plugin-vue';
+import generateSitemap from 'vite-ssg-sitemap';
 import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 import Unocss from 'unocss/vite';
@@ -95,5 +96,22 @@ export default defineConfig({
     ssr: {
         // SSG Vue-i18n workaround
         noExternal: [/vue-i18n/],
+    },
+    // @ts-ignore
+    ssgOptions: {
+        // 设置生成的 HTML 文件中 <script> 标签的加载方式为异步加载
+        script: 'async',
+        // 对生成的 HTML 文件进行压缩，去除不必要的空格和换行符，减小文件大小
+        formatting: 'minify',
+        // 配置 Critters 插件的选项
+        crittersOptions: {
+            // 禁用减少内联样式的功能，即不压缩内联样式
+            reduceInlineStyles: false,
+        },
+        // 定义一个回调函数，在静态站点生成完成后执行
+        onFinished() {
+            // 调用 generateSitemap 函数生成网站的 sitemap.xml 文件
+            generateSitemap();
+        },
     },
 })
