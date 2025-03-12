@@ -1,9 +1,6 @@
 <template>
   <div text-center>
     <div mb-10>我是首页</div>
-    <div text-4xl>
-      <img inline-block src="/logo.png" />
-    </div>
     <div py-4>
       <em text-sm opacity-75>{{ t("intro.desc") }}</em>
     </div>

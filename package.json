@@ -6,10 +6,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite --port 8000 --open",
-    "build": "vite build",
+    "build": "build",
+    "build-ssg": "vite-ssg build",
     "preview": "vite preview",
+    "test": "vitest",
     "test:unit": "vitest",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typecheck": "vue-tsc --noEmit"
   },
   "keywords": [],
   "author": "zfleaves",

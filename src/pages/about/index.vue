@@ -28,10 +28,6 @@
         {{ t('button.back') }}
       </button>
     </div>
-
-    <div text-4xl>
-      <img inline-block src="/logo.png" />
-    </div>
   </div>
 </template>
 <script setup lang="ts">
