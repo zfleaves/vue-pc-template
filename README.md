@@ -4,6 +4,7 @@
 
 ## ⛰️ 能力支持
 
+- [`pnpm`](https://github.com/pnpm/pnpm) 使用pnpm包管理工具
 - [`Vue Router`](https://github.com/vuejs/router)
 - [`Pinia`](https://pinia.vuejs.org) - 直接的, 类型安全的, 使用 Composition API 的轻便灵活的 Vue 状态管理
 - [`vite-plugin-vue-markdown`](https://github.com/antfu/vite-plugin-vue-markdown) - Markdown 作为组件，也可以让组件在 Markdown 中使用
