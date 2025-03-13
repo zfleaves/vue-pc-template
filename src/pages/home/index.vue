@@ -1,6 +1,6 @@
 <template>
   <div text-center>
-    <div mb-10>我是首页</div>
+    <div mb-10 class="title-text">我是首页</div>
     <div py-4>
       <em text-sm opacity-75>{{ t("intro.desc") }}</em>
     </div>
@@ -52,3 +52,8 @@ const toggleLocales = async () => {
   locale.value = newLocale;
 };
 </script>
+<style lang="scss" scoped>
+.title-text {
+  color: $red;
+}
+</style>

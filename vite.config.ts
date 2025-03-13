@@ -43,6 +43,14 @@ export default defineConfig({
     //         ]
     //     }
     // },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                // 可选：如需全局变量/混合器，用 additionalData 注入
+                additionalData: `@use "src/styles/variables" as *;`
+            }
+        }
+    },
     resolve: {
         alias: {
             '@/': `${path.resolve(__dirname, 'src')}/`,
