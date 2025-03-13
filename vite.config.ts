@@ -12,8 +12,37 @@ import VueMacros from 'unplugin-vue-macros/vite';
 import VueI18n from '@intlify/unplugin-vue-i18n/vite';
 import VueDevTools from 'vite-plugin-vue-devtools';
 import WebfontDownload from 'vite-plugin-webfont-dl';
+import { visualizer } from 'rollup-plugin-visualizer';
+import viteImagemin from 'vite-plugin-imagemin';
+import viteCompression from 'vite-plugin-compression';
+import externalGlobals from 'rollup-plugin-external-globals';
 
 export default defineConfig({
+    /**
+     * 核心框架类（如 Vue、React）​
+     * <head><script src="https://cdn.jsdelivr.net/npm/vue@3.4.21" defer></script></head>
+     * defer 确保脚本下载不阻塞 HTML 解析，并在 DOM 解析完成后按顺序执行。
+     * 这对于 Vue 等框架非常重要，因为它们通常依赖于 DOM 来正确初始化。
+     * 此外，defer 还可以确保脚本在所有框架加载完成后执行，从而避免潜在的冲突。
+     * UI 组件库（如 Element Plus、Ant Design）​<body> 末尾引入
+     * <body>---页面内容---<script src="https://cdn.jsdelivr.net/npm/element-plus@2.7.3" async></script></body>
+     * async 实现异步加载，下载完成后立即执行（不保证顺序），适用于非关键渲染路径的依赖
+     * 工具类库（如 lodash、axios）<body> 末尾引入
+     * 无特殊属性（默认同步加载）
+     * 二、性能优化进阶方案
+     * <head><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"></head>
+     */
+    // build: {
+    //     rollupOptions: {
+    //         external: ['vue', 'axios'],
+    //         plugins: [
+    //             externalGlobals({
+    //                 vue: 'Vue',
+    //                 axios: 'axios'
+    //             })
+    //         ]
+    //     }
+    // },
     resolve: {
         alias: {
             '@/': `${path.resolve(__dirname, 'src')}/`,
@@ -27,6 +56,15 @@ export default defineConfig({
         },
     },
     plugins: [
+        viteImagemin({
+            gifsicle: { optimizationLevel: 3 },
+            mozjpeg: { quality: 80 },
+            pngquant: { quality: [0.8, 0.9] }
+        }),
+        viteCompression({
+            algorithm: 'brotliCompress', // 或 'gzip'
+            threshold: 10240 // 10KB 以上文件压缩[2](@ref)
+        }),
         // Vue(),
         VueMacros({
             plugins: {
@@ -83,6 +121,11 @@ export default defineConfig({
         WebfontDownload(),
 
         VueDevTools(),
+
+        visualizer({
+            open: true, // 自动打开分析页面
+            filename: 'stats.html' // 输出文件名[2,6](@ref)
+        })
     ],
 
     test: {
