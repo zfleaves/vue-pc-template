@@ -29,15 +29,16 @@
       </a>
     </nav>
     <nav flex="~ gap-4" mt-6 justify-center text-xl>
-      <button m-3 text-sm btn @click="handleLoginTest">
+      <!-- <button m-3 text-sm btn @click="handleLoginTest">
         登录测试
-      </button>
+      </button> -->
+      <el-button type="primary" @click="handleLoginTest">登录测试</el-button primary>
     </nav>
   </div>
 </template>
 <script setup lang="ts">
 import { availableLocales, loadLanguageAsync } from '@/modules/i18n';
-// import { getAuthorButtons } from '@/api/request/login';
+import { getAuthorButtons } from '@/api/login';
 
 defineOptions({
   name: "HomePage",
@@ -58,8 +59,8 @@ const toggleLocales = async () => {
   locale.value = newLocale;
 };
 const handleLoginTest = async () => {
-  // const res = await getAuthorButtons();
-  // console.log('res: ', res);
+  const res = await getAuthorButtons({time: Date.now()});
+  console.log('res: ', res);
 }
 </script>
 <style lang="scss" scoped>

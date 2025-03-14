@@ -4,6 +4,7 @@ import Vue from '@vitejs/plugin-vue';
 import generateSitemap from 'vite-ssg-sitemap';
 import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Unocss from 'unocss/vite';
 import Shiki from 'markdown-it-shiki';
 import LinkAttributes from 'markdown-it-link-attributes';
@@ -44,8 +45,8 @@ export default defineConfig({
         port: 3030,
         open: true,
         proxy: {
-            '/api': {
-                target: 'http://127.0.0.1:8000',
+            '/v4/web': {
+                target: 'https://itest.clife.net',
                 changeOrigin: true,
                 rewrite: path => path.replace(/^\/api/, "")
             },
@@ -79,12 +80,14 @@ export default defineConfig({
             dts: 'src/auto-imports.d.ts',
             dirs: ['src/composables', 'src/stores'],
             vueTemplate: true,
+            resolvers: [ElementPlusResolver()],
         }),
 
         Components({
             extensions: ['vue'],
             include: [/\.vue$/],
             dts: 'src/components.d.ts',
+            resolvers: [ElementPlusResolver()],
         }),
 
         Unocss(),
