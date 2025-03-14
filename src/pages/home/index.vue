@@ -34,6 +34,15 @@
       </button> -->
       <el-button type="primary" @click="handleLoginTest">登录测试</el-button primary>
     </nav>
+    <el-card style="max-width: 480px">
+      <template #header>
+        <div class="card-header">
+          <span>Card name</span>
+        </div>
+      </template>
+      <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+      <template #footer>Footer content</template>
+    </el-card>
   </div>
 </template>
 <script setup lang="ts">

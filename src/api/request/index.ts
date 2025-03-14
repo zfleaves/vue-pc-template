@@ -19,8 +19,6 @@ const config = {
     withCredentials: true
 }
 
-const NOOP = () => { };
-
 class RequestHttp {
     service: AxiosInstance;
     // 用于存储错误信息的数组

@@ -16,7 +16,8 @@ import WebfontDownload from 'vite-plugin-webfont-dl';
 import { visualizer } from 'rollup-plugin-visualizer';
 import viteImagemin from 'vite-plugin-imagemin';
 import viteCompression from 'vite-plugin-compression';
-import externalGlobals from 'rollup-plugin-external-globals';
+import { createHtmlPlugin } from 'vite-plugin-html'
+import importToCDN from 'vite-plugin-cdn-import';
 
 export default defineConfig({
     resolve: {
@@ -74,6 +75,15 @@ export default defineConfig({
                 }),
             },
         }),
+        createHtmlPlugin({
+            minify: {
+                collapseWhitespace: true,
+                removeComments: true,
+                minifyCSS: true,
+                minifyJS: true,
+                // 其他选项参考 html-minifier-terser
+            }
+        }),
 
         AutoImport({
             imports: ['vue', 'vue-router', 'vue-i18n', '@vueuse/head', '@vueuse/core'],
@@ -128,6 +138,13 @@ export default defineConfig({
         visualizer({
             open: true, // 自动打开分析页面
             filename: 'stats.html' // 输出文件名[2,6](@ref)
+        }),
+        importToCDN({
+            modules: [
+                { name: 'vue', var: 'Vue', path: 'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js' },
+                { name: 'axios', var: 'axios', path: 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js' },
+                { name: 'element-plus', var: 'ElementPlus', path: 'https://cdn.jsdelivr.net/npm/element-plus/dist/index.full.min.js' },
+            ]
         })
     ],
 
@@ -176,6 +193,8 @@ export default defineConfig({
                 // 自动分割第三方库和公共模块
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
+                        if (id.includes('vue-router')) return 'vendor-router';
+                        if (id.includes('vue-i18n')) return'vendor-i18n';
                         return 'vendor'
                     }
                 },
@@ -183,28 +202,7 @@ export default defineConfig({
                 chunkFileNames: "assets/js/[name]-[hash].js",
                 entryFileNames: "assets/js/[name]-[hash].js",
                 assetFileNames: "assets/[ext]/[name]-[hash].[ext]"
-            },
-            /**
-             * 核心框架类（如 Vue、React）​
-             * <head><script src="https://cdn.jsdelivr.net/npm/vue@3.4.21" defer></script></head>
-             * defer 确保脚本下载不阻塞 HTML 解析，并在 DOM 解析完成后按顺序执行。
-             * 这对于 Vue 等框架非常重要，因为它们通常依赖于 DOM 来正确初始化。
-             * 此外，defer 还可以确保脚本在所有框架加载完成后执行，从而避免潜在的冲突。
-             * UI 组件库（如 Element Plus、Ant Design）​<body> 末尾引入
-             * <body>---页面内容---<script src="https://cdn.jsdelivr.net/npm/element-plus@2.7.3" async></script></body>
-             * async 实现异步加载，下载完成后立即执行（不保证顺序），适用于非关键渲染路径的依赖
-             * 工具类库（如 lodash、axios）<body> 末尾引入
-             * 无特殊属性（默认同步加载）
-             * 二、性能优化进阶方案
-             * <head><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"></head>
-             */
-            // external: ['vue', 'axios'],
-            // plugins: [
-            //     externalGlobals({
-            //         vue: 'Vue',
-            //         axios: 'axios'
-            //     })
-            // ]
+            }
         }
     },
 })

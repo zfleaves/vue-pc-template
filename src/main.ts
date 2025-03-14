@@ -1,5 +1,6 @@
 import { ViteSSG } from 'vite-ssg';
 import App from './App.vue';
+import ElementPlus from 'element-plus'
 import type { UserModule } from './types';
 import routes from './router/routes';
 
@@ -14,4 +15,5 @@ export const createApp = ViteSSG(App, { routes, base: import.meta.env.BASE_URL }
         import.meta.glob<{ install: UserModule }>('./modules/*.ts', { eager: true }),
     ).forEach((i) => i.install?.(ctx));
     // ctx.app.use(Previewer)
+    ctx.app.use(ElementPlus)
 });
