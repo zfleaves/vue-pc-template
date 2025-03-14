@@ -28,10 +28,16 @@
         <div i-carbon-language />
       </a>
     </nav>
+    <nav flex="~ gap-4" mt-6 justify-center text-xl>
+      <button m-3 text-sm btn @click="handleLoginTest">
+        登录测试
+      </button>
+    </nav>
   </div>
 </template>
 <script setup lang="ts">
 import { availableLocales, loadLanguageAsync } from '@/modules/i18n';
+// import { getAuthorButtons } from '@/api/request/login';
 
 defineOptions({
   name: "HomePage",
@@ -51,6 +57,10 @@ const toggleLocales = async () => {
   await loadLanguageAsync(newLocale);
   locale.value = newLocale;
 };
+const handleLoginTest = async () => {
+  // const res = await getAuthorButtons();
+  // console.log('res: ', res);
+}
 </script>
 <style lang="scss" scoped>
 .title-text {

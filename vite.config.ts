@@ -18,39 +18,6 @@ import viteCompression from 'vite-plugin-compression';
 import externalGlobals from 'rollup-plugin-external-globals';
 
 export default defineConfig({
-    /**
-     * 核心框架类（如 Vue、React）​
-     * <head><script src="https://cdn.jsdelivr.net/npm/vue@3.4.21" defer></script></head>
-     * defer 确保脚本下载不阻塞 HTML 解析，并在 DOM 解析完成后按顺序执行。
-     * 这对于 Vue 等框架非常重要，因为它们通常依赖于 DOM 来正确初始化。
-     * 此外，defer 还可以确保脚本在所有框架加载完成后执行，从而避免潜在的冲突。
-     * UI 组件库（如 Element Plus、Ant Design）​<body> 末尾引入
-     * <body>---页面内容---<script src="https://cdn.jsdelivr.net/npm/element-plus@2.7.3" async></script></body>
-     * async 实现异步加载，下载完成后立即执行（不保证顺序），适用于非关键渲染路径的依赖
-     * 工具类库（如 lodash、axios）<body> 末尾引入
-     * 无特殊属性（默认同步加载）
-     * 二、性能优化进阶方案
-     * <head><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"></head>
-     */
-    // build: {
-    //     rollupOptions: {
-    //         external: ['vue', 'axios'],
-    //         plugins: [
-    //             externalGlobals({
-    //                 vue: 'Vue',
-    //                 axios: 'axios'
-    //             })
-    //         ]
-    //     }
-    // },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                // 可选：如需全局变量/混合器，用 additionalData 注入
-                additionalData: `@use "src/styles/variables" as *;`
-            }
-        }
-    },
     resolve: {
         alias: {
             '@/': `${path.resolve(__dirname, 'src')}/`,
@@ -63,6 +30,28 @@ export default defineConfig({
             'hooks/': `${path.resolve(__dirname, 'src/hooks')}/`,
         },
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                // 可选：如需全局变量/混合器，用 additionalData 注入
+                additionalData: `@use "src/styles/variables" as *;`
+            }
+        }
+    },
+    server: {
+        host: "0.0.0.0", // 服务器主机名，如果允许外部访问，可设置为"0.0.0.0"
+        cors: true,
+        port: 3030,
+        open: true,
+        proxy: {
+            '/api': {
+                target: 'http://127.0.0.1:8000',
+                changeOrigin: true,
+                rewrite: path => path.replace(/^\/api/, "")
+            },
+        }
+
+    },
     plugins: [
         viteImagemin({
             gifsicle: { optimizationLevel: 3 },
@@ -70,8 +59,11 @@ export default defineConfig({
             pngquant: { quality: [0.8, 0.9] }
         }),
         viteCompression({
-            algorithm: 'brotliCompress', // 或 'gzip'
-            threshold: 10240 // 10KB 以上文件压缩[2](@ref)
+            verbose: true,
+            disable: false,
+            threshold: 10240,
+            algorithm: "gzip",
+            ext: ".gz"
         }),
         // Vue(),
         VueMacros({
@@ -164,5 +156,52 @@ export default defineConfig({
             // 调用 generateSitemap 函数生成网站的 sitemap.xml 文件
             generateSitemap();
         },
+    },
+    build: {
+        outDir: "dist",
+        // esbuild 打包更快，但是不能去除 console.log，去除 console 使用 terser 模式
+        // minify: "esbuild",
+        minify: "terser",
+        terserOptions: {
+            compress: {
+                drop_console: true,
+                drop_debugger: true
+            }
+        },
+        rollupOptions: {
+            output: {
+                // 自动分割第三方库和公共模块
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        return 'vendor'
+                    }
+                },
+                // Static resource classification and packaging
+                chunkFileNames: "assets/js/[name]-[hash].js",
+                entryFileNames: "assets/js/[name]-[hash].js",
+                assetFileNames: "assets/[ext]/[name]-[hash].[ext]"
+            },
+            /**
+             * 核心框架类（如 Vue、React）​
+             * <head><script src="https://cdn.jsdelivr.net/npm/vue@3.4.21" defer></script></head>
+             * defer 确保脚本下载不阻塞 HTML 解析，并在 DOM 解析完成后按顺序执行。
+             * 这对于 Vue 等框架非常重要，因为它们通常依赖于 DOM 来正确初始化。
+             * 此外，defer 还可以确保脚本在所有框架加载完成后执行，从而避免潜在的冲突。
+             * UI 组件库（如 Element Plus、Ant Design）​<body> 末尾引入
+             * <body>---页面内容---<script src="https://cdn.jsdelivr.net/npm/element-plus@2.7.3" async></script></body>
+             * async 实现异步加载，下载完成后立即执行（不保证顺序），适用于非关键渲染路径的依赖
+             * 工具类库（如 lodash、axios）<body> 末尾引入
+             * 无特殊属性（默认同步加载）
+             * 二、性能优化进阶方案
+             * <head><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"></head>
+             */
+            // external: ['vue', 'axios'],
+            // plugins: [
+            //     externalGlobals({
+            //         vue: 'Vue',
+            //         axios: 'axios'
+            //     })
+            // ]
+        }
     },
 })
