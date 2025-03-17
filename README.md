@@ -18,6 +18,8 @@
 - 使用 Composition API 地 [`<script setup>` SFC 语法](https://github.com/vuejs/rfcs/pull/227)
 - [`TypeScript`](https://www.typescriptlang.org/)
 - [`Vitest`](https://github.com/vitest-dev/vitest) - 基于 Vite 的单元测试框架
+- [`zfleaves-monitor-web`](https://www.npmjs.com/package/zfleaves-monitor-web) - 自定义前端vue监控插件
+- [`zfleaves-monitor-web-performance`](https://www.npmjs.com/package/zfleaves-monitor-web-performance) - 自定义前端web性能监控,用于监控FCP\FP\CLS\LCP\CCP\FID\FPS 等性能指标。
 
 ## 🛡️ 配置要求
 

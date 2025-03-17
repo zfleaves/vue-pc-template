@@ -29,9 +29,7 @@
       </a>
     </nav>
     <nav flex="~ gap-4" mt-6 justify-center text-xl>
-      <!-- <button m-3 text-sm btn @click="handleLoginTest">
-        登录测试
-      </button> -->
+      <el-button type="primary" @click="handleReport">错误上报</el-button primary>
       <el-button type="primary" @click="handleLoginTest">登录测试</el-button primary>
     </nav>
     <el-card style="max-width: 480px">
@@ -56,6 +54,7 @@ const user = useUserStore();
 const name = ref(user.savedName);
 
 const router = useRouter();
+const obj: any = reactive({});
 
 const { t, locale } = useI18n();
 const go = () => {
@@ -70,6 +69,10 @@ const toggleLocales = async () => {
 const handleLoginTest = async () => {
   const res = await getAuthorButtons({time: Date.now()});
   console.log('res: ', res);
+}
+// 错误上报
+const handleReport = () => {
+  obj.x.x.x = 4;
 }
 </script>
 <style lang="scss" scoped>
