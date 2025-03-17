@@ -5,7 +5,8 @@
 ## ⛰️ 能力支持
 
 - [`pnpm`](https://github.com/pnpm/pnpm) 使用pnpm包管理工具
-- [`Vue Router`](https://github.com/vuejs/router)
+- [`Vue Router`](https://github.com/vuejs/router) Vue3 路由
+- [`Unocss、Tailwind CSS`](https://github.com/unocss/unocss) 使用unocss原子化css工具、tailwindcssURL_ADDRESS 使用unocss原子化css工具、tailwindcss 配合使用，减少CSS体积
 - [`Pinia`](https://pinia.vuejs.org) - 直接的, 类型安全的, 使用 Composition API 的轻便灵活的 Vue 状态管理
 - [`vite-plugin-vue-markdown`](https://github.com/antfu/vite-plugin-vue-markdown) - Markdown 作为组件，也可以让组件在 Markdown 中使用
 - [`markdown-it-prism`](https://github.com/jGleitz/markdown-it-prism) - [Prism](https://prismjs.com/) 的语法高亮
