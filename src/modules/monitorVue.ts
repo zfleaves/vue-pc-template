@@ -13,10 +13,10 @@ export const install: UserModule = ({ app, isClient }) => {
             maxBreadcrumbs: 10,
             dsn: `${dsn}/upload`,
             // 如果需要自定义上报，则需要实现 beforeDataReport 方法，且返回 false，
-            beforeDataReport: (data) => {
-                console.log('data: ', data);
-                return false;
-            }
+            // beforeDataReport: (data) => {
+            //     console.log('data: ', data);
+            //     return false;
+            // }
         });
     }
 }

@@ -35,15 +35,16 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
+                api: 'modern-compiler',
                 // 可选：如需全局变量/混合器，用 additionalData 注入
-                additionalData: `@use "src/styles/variables" as *;`
+                additionalData: `@use "src/styles/variables" as *;`,
             }
         }
     },
     server: {
         host: "0.0.0.0", // 服务器主机名，如果允许外部访问，可设置为"0.0.0.0"
         cors: true,
-        port: 3030,
+        port: 8000,
         open: true,
         proxy: {
             '/v4/web': {

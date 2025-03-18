@@ -51,8 +51,8 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0(vue@3.5.13(typescript@5.8.2))
       zfleaves-monitor-web:
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
     devDependencies:
       '@iconify-json/carbon':
         specifier: ^1.2.8
@@ -5402,8 +5402,8 @@ packages:
   zfleaves-monitor-vue@0.0.3:
     resolution: {integrity: sha512-fDVxT5JbG5w8RTVRZC4uW8xiDzF3Bjs+trFs56hlTupACE6TG7foQd4gYw7xpQlBM2PrZQTYdyyphbicn5BCPA==}
 
-  zfleaves-monitor-web@0.0.3:
-    resolution: {integrity: sha512-tU0TujMgjlj6Jx6uU0r4QIf7IDPfmin2EeoxbZZCqIqeO5bnORFRB3AKGKXTzIWKSA0XFUpcSl20W6pQWfeLOw==}
+  zfleaves-monitor-web@0.0.4:
+    resolution: {integrity: sha512-IvLOnDjCoGrohXEPD5SopMYeYFdzvVqUfE752c3AOg6+z1JOL6qxnQd1rtFOLh7T00uoY1qij+ujqNbI50vTRw==}
 
   zhead@2.2.4:
     resolution: {integrity: sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag==}
@@ -11367,7 +11367,7 @@ snapshots:
       zfleaves-monitor-shared: 0.0.1
       zfleaves-monitor-tools: 0.0.1
 
-  zfleaves-monitor-web@0.0.3:
+  zfleaves-monitor-web@0.0.4:
     dependencies:
       zfleaves-monitor-browser: 0.0.3
       zfleaves-monitor-react: 0.0.3
