@@ -232,3 +232,263 @@ PRODUCTION_HEALTH_CHECK_URL - 生产环境健康检查 URL
 SLACK_BOT_TOKEN        - Slack Bot 令牌
 SLACK_CHANNEL_ID       - Slack 频道 ID
 ```
+
+## 🚀 使用 Coding 实现 CI/CD
+
+除了 GitHub Actions，本项目也支持使用 Coding 进行持续集成和部署。Coding 是国内领先的 DevOps 平台，提供代码托管、项目管理、测试管理、持续集成/部署等一站式研发工具。
+
+### Coding CI/CD 配置步骤
+
+1. **创建构建计划**：
+   - 登录 Coding，进入您的项目
+   - 点击"持续集成" > "构建计划" > "创建构建计划"
+   - 选择"自定义构建过程"
+
+2. **配置构建环境**：
+   - 选择构建环境：Node.js 环境（推荐 Node 16+）
+   - 代码源：选择您的代码仓库和分支
+
+3. **配置构建过程**：
+
+```yaml
+# .coding-ci.yml 文件示例
+version: 2.0
+stages:
+  - 检查
+  - 测试
+  - 构建
+  - 部署测试环境
+  - 部署生产环境
+
+检查代码:
+  stage: 检查
+  node_version: 16
+  commands:
+    - pnpm install
+    - pnpm run lint
+    - pnpm run type-check
+
+单元测试:
+  stage: 测试
+  node_version: 16
+  commands:
+    - pnpm install
+    - pnpm run test:unit
+  artifacts:
+    reports:
+      junit: ./test-results.xml
+      cobertura: ./coverage/cobertura-coverage.xml
+
+构建项目:
+  stage: 构建
+  node_version: 16
+  commands:
+    - pnpm install
+    - pnpm run build
+  artifacts:
+    paths:
+      - dist/
+
+部署测试环境:
+  stage: 部署测试环境
+  when: manual
+  node_version: 16
+  commands:
+    - mkdir -p ~/.ssh
+    - echo "$CODING_DEPLOY_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -t rsa $STAGING_SERVER >> ~/.ssh/known_hosts
+    - tar -czf dist.tar.gz dist
+    - scp dist.tar.gz $STAGING_USER@$STAGING_SERVER:$STAGING_PATH
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && mkdir -p backups && if [ -d 'current' ]; then mv current backups/backup_$(date +%Y%m%d_%H%M%S); fi && mkdir -p current && tar -xzf dist.tar.gz -C current && rm dist.tar.gz && ls -t backups | tail -n +6 | xargs -I {} rm -rf backups/{}"
+    - curl -f $STAGING_HEALTH_CHECK_URL || (echo "健康检查失败，正在回滚..." && ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && rm -rf current && mv backups/$(ls -t backups | head -1) current" && exit 1)
+
+部署生产环境:
+  stage: 部署生产环境
+  when: manual
+  only:
+    - main
+    - /^v\d+\.\d+\.\d+$/
+  node_version: 16
+  commands:
+    - mkdir -p ~/.ssh
+    - echo "$CODING_DEPLOY_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -t rsa $PRODUCTION_SERVER >> ~/.ssh/known_hosts
+    - tar -czf dist.tar.gz dist
+    - scp dist.tar.gz $PRODUCTION_USER@$PRODUCTION_SERVER:$PRODUCTION_PATH
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && mkdir -p backups && if [ -d 'current' ]; then mv current backups/backup_$(date +%Y%m%d_%H%M%S); fi && mkdir -p current && tar -xzf dist.tar.gz -C current && rm dist.tar.gz && ls -t backups | tail -n +6 | xargs -I {} rm -rf backups/{}"
+    - curl -f $PRODUCTION_HEALTH_CHECK_URL || (echo "健康检查失败，正在回滚..." && ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && rm -rf current && mv backups/$(ls -t backups | head -1) current" && exit 1)
+```
+
+4. **配置环境变量**：
+   在 Coding 项目设置中添加以下环境变量：
+
+```
+# 部署密钥
+CODING_DEPLOY_KEY      - 用于部署的 SSH 私钥
+
+# 测试环境配置
+STAGING_SERVER         - 测试服务器地址
+STAGING_USER           - 测试服务器用户名
+STAGING_PATH           - 测试环境部署路径
+STAGING_HEALTH_CHECK_URL - 测试环境健康检查 URL
+
+# 生产环境配置
+PRODUCTION_SERVER      - 生产服务器地址
+PRODUCTION_USER        - 生产服务器用户名
+PRODUCTION_PATH        - 生产环境部署路径
+PRODUCTION_HEALTH_CHECK_URL - 生产环境健康检查 URL
+```
+
+5. **触发构建**：
+   - 自动触发：推送代码到指定分支
+   - 手动触发：在 Coding 控制台手动启动构建
+   - 定时触发：设置定时构建计划
+
+### Coding CI/CD 特性
+
+- **构建缓存**：启用依赖缓存加速构建
+- **并行构建**：支持多任务并行执行
+- **构建矩阵**：支持多环境测试
+- **自定义工作流**：可视化编排流水线
+- **制品管理**：自动归档构建产物
+- **质量报告**：集成测试、覆盖率报告
+- **通知集成**：支持企业微信、钉钉等通知
+- **审批流程**：支持人工审批部署
+- **蓝绿部署**：支持高级部署策略
+
+### Coding 与 GitHub Actions 的区别
+
+- Coding 提供更完善的中文支持和本地化服务
+- Coding 支持与腾讯云、阿里云等国内云服务更好的集成
+- Coding 提供更完整的 DevOps 全流程工具链
+- Coding 在国内网络环境下访问更快
+- Coding 支持私有化部署版本
+
+### Coding CI/CD 工作流程图
+
+```mermaid
+flowchart TD
+    subgraph 代码管理
+        A[代码提交] --> B[代码仓库]
+        B --> C{触发条件}
+    end
+    
+    subgraph 持续集成
+        C -->|自动/手动触发| D[检查代码]
+        D --> E[单元测试]
+        E --> F[构建项目]
+        F --> G{构建成功?}
+        G -->|否| H[通知失败]
+        G -->|是| I[生成构建制品]
+    end
+    
+    subgraph 持续部署
+        I --> J{部署环境}
+        
+        J -->|测试环境| K[人工确认]
+        K --> L[部署测试环境]
+        L --> M{健康检查}
+        M -->|失败| N[自动回滚]
+        M -->|成功| O[测试环境部署成功]
+        
+        J -->|生产环境| P[人工确认]
+        P --> Q[部署生产环境]
+        Q --> R{健康检查}
+        R -->|失败| S[自动回滚]
+        R -->|成功| T[生产环境部署成功]
+    end
+    
+    subgraph 监控反馈
+        N --> U[通知部署失败]
+        S --> U
+        O --> V[通知部署成功]
+        T --> V
+        U --> W[问题修复]
+        W --> A
+    end
+```
+
+### 在项目中添加 Coding CI/CD 配置
+
+1. 在项目根目录创建 `.coding-ci.yml` 文件
+2. 复制上述配置示例并根据项目需求调整
+3. 提交到代码仓库
+4. 在 Coding 平台创建并配置构建计划
+
+通过以上步骤，您可以在 Coding 平台上实现与 GitHub Actions 类似的 CI/CD 流程，享受国内更快的构建速度和更本地化的服务支持。
+
+## 🌩️ Coding 部署到腾讯云
+
+Coding 与腾讯云有深度集成，可以便捷地将项目部署到腾讯云服务。
+
+### 部署到腾讯云 COS
+
+适合静态网站托管：
+
+```yaml
+部署到腾讯云COS:
+  stage: 部署
+  node_version: 16
+  commands:
+    - pnpm install -g coscmd
+    - coscmd config -a $COS_SECRET_ID -s $COS_SECRET_KEY -b $COS_BUCKET -r $COS_REGION
+    - coscmd upload -r ./dist/ /
+    - coscmd cdnurl $COS_CDN_URL purge -d
+```
+
+### 部署到腾讯云 CVM
+
+适合需要 Node.js 服务端的应用：
+
+```yaml
+部署到腾讯云CVM:
+  stage: 部署
+  node_version: 16
+  commands:
+    - mkdir -p ~/.ssh
+    - echo "$CVM_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -t rsa $CVM_HOST >> ~/.ssh/known_hosts
+    - tar -czf dist.tar.gz dist
+    - scp dist.tar.gz $CVM_USER@$CVM_HOST:$CVM_PATH
+    - ssh $CVM_USER@$CVM_HOST "cd $CVM_PATH && tar -xzf dist.tar.gz && rm dist.tar.gz && npm install --production && pm2 restart app.js"
+```
+
+### 部署到腾讯云 TKE
+
+适合容器化应用：
+
+```yaml
+部署到腾讯云TKE:
+  stage: 部署
+  docker: true
+  commands:
+    - docker build -t $CODING_DOCKER_REG_HOST/$CODING_DOCKER_IMAGE:$CODING_BUILD_NUMBER .
+    - docker login -u $CODING_DOCKER_REG_USER -p $CODING_DOCKER_REG_PASSWORD $CODING_DOCKER_REG_HOST
+    - docker push $CODING_DOCKER_REG_HOST/$CODING_DOCKER_IMAGE:$CODING_BUILD_NUMBER
+    - curl -LO "https://dl.k8s.io/release/stable.txt"
+    - curl -LO "https://dl.k8s.io/release/$(cat stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x kubectl
+    - mkdir -p ~/.kube
+    - echo "$KUBE_CONFIG" > ~/.kube/config
+    - ./kubectl set image deployment/$DEPLOYMENT_NAME $CONTAINER_NAME=$CODING_DOCKER_REG_HOST/$CODING_DOCKER_IMAGE:$CODING_BUILD_NUMBER -n $NAMESPACE
+    - ./kubectl rollout status deployment/$DEPLOYMENT_NAME -n $NAMESPACE
+```
+
+### 使用 Coding 持续部署功能
+
+除了在构建计划中配置部署步骤，Coding 还提供了专门的"持续部署"功能：
+
+1. 在 Coding 项目中，点击"持续部署" > "创建部署计划"
+2. 选择部署方式：
+   - 腾讯云 COS
+   - 腾讯云 CVM
+   - 腾讯云 TKE
+   - 自定义脚本
+3. 配置部署参数
+4. 设置触发方式（手动/自动）
+5. 设置审批流程（可选）
+
+通过 Coding 的持续部署功能，您可以更直观地管理不同环境的部署，并支持更复杂的部署策略，如蓝绿部署、金丝雀发布等。
