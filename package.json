@@ -18,7 +18,7 @@
     "test": "vitest",
     "test:unit": "vitest",
     "up": "taze major -I",
-    "prepublishOnly": "chmod +x bin/vue-pc-cli.js",
+    "prepublishOnly": "node -e \"try { require('fs').chmodSync('bin/vue-pc-cli.js', '0755') } catch (e) { console.log('Windows环境无需设置执行权限') }\"",
     "publish:patch": "npm version patch && npm publish",
     "publish:minor": "npm version minor && npm publish",
     "publish:major": "npm version major && npm publish"
