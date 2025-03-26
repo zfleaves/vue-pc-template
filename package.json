@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "vue-pc-template-cli",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Vue PC 项目模板 CLI 工具",
   "main": "index.js",
   "bin": {
