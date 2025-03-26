@@ -35,5 +35,5 @@
   "vueCompilerOptions": {
     "plugins": ["@vue-macros/volar/define-models", "@vue-macros/volar/define-slots"]
   },
-  "exclude": ["dist", "node_modules", "*.js"]
+  "exclude": ["dist", "node_modules", "*.js", "bin"]
 }

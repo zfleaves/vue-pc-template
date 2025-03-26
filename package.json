@@ -1,9 +1,13 @@
 {
   "type": "module",
-  "name": "vue-pc-template",
+  "name": "vue-pc-template-cli",
   "version": "1.0.0",
-  "description": "vue 项目模板",
+  "description": "Vue PC 项目模板 CLI 工具",
   "main": "index.js",
+  "bin": {
+    "vue-pc-template": "bin/vue-pc-cli.js",
+    "vpc": "bin/vue-pc-cli.js"
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install",
@@ -13,7 +17,11 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:unit": "vitest",
-    "up": "taze major -I"
+    "up": "taze major -I",
+    "prepublishOnly": "chmod +x bin/vue-pc-cli.js",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish"
   },
   "repository": {
     "type": "git",
@@ -23,7 +31,11 @@
     "zfleaves",
     "vue",
     "vite",
-    "template"
+    "template",
+    "cli",
+    "vue-cli",
+    "scaffold",
+    "generator"
   ],
   "author": "zfleaves",
   "license": "ISC",
@@ -33,8 +45,12 @@
     "@vueuse/core": "^10.11.1",
     "@vueuse/head": "^1.3.1",
     "axios": "^1.8.3",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
     "element-plus": "^2.9.6",
+    "inquirer": "^9.2.12",
     "nprogress": "^0.2.0",
+    "ora": "^7.0.1",
     "pinia": "^2.3.1",
     "qs": "^6.14.0",
     "vite-plugin-html": "^3.2.2",
