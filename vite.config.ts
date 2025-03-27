@@ -2,6 +2,8 @@ import path from 'node:path';
 import { defineConfig } from 'vite';
 import Vue from '@vitejs/plugin-vue';
 import generateSitemap from 'vite-ssg-sitemap';
+import cdnUploadPlugin from './src/plugins/vite-plugin-cdn-upload';
+import imageProcessorPlugin from './src/plugins/vite-plugin-image-processor';
 import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -14,10 +16,10 @@ import VueI18n from '@intlify/unplugin-vue-i18n/vite';
 import VueDevTools from 'vite-plugin-vue-devtools';
 import WebfontDownload from 'vite-plugin-webfont-dl';
 import { visualizer } from 'rollup-plugin-visualizer';
-import viteImagemin from 'vite-plugin-imagemin';
 import viteCompression from 'vite-plugin-compression';
 import { createHtmlPlugin } from 'vite-plugin-html'
 import importToCDN from 'vite-plugin-cdn-import';
+console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
 
 export default defineConfig({
     resolve: {
@@ -56,11 +58,21 @@ export default defineConfig({
 
     },
     plugins: [
-        viteImagemin({
-            gifsicle: { optimizationLevel: 3 },
-            mozjpeg: { quality: 80 },
-            pngquant: { quality: [0.8, 0.9] }
+        // 图像处理插件
+        imageProcessorPlugin({
+            toWebp: true,
+            maxWidth: 2000,
+            quality: 75,
+            outputDir: 'dist',
+            keepOriginal: false
         }),
+
+        // 图片压缩（可选，如果需要进一步压缩）
+        // viteImagemin({
+        //     gifsicle: { optimizationLevel: 3 },
+        //     mozjpeg: { quality: 80 },
+        //     pngquant: { quality: [0.8, 0.9] }
+        // }),
         viteCompression({
             verbose: true,
             disable: false,
@@ -85,6 +97,24 @@ export default defineConfig({
                 // 其他选项参考 html-minifier-terser
             }
         }),
+        {
+            // CDN上传插件 - 使用默认值并覆盖部分配置 
+            ...cdnUploadPlugin({
+                cdn: {
+                    uploadUrl: 'https://your-cdn-upload-url.com/upload',
+                    domain: 'https://cdn.your-domain.com',
+                    auth: {
+                        accessKey: process.env.CDN_ACCESS_KEY || '',
+                        secretKey: process.env.CDN_SECRET_KEY || ''
+                    }
+                },
+                // 只需覆盖需要的参数，其他参数使用默认值
+                env: {
+                    current: (process.env.NODE_ENV || 'dev') as any
+                }
+            }),
+            enforce: 'post'
+        },
 
         AutoImport({
             imports: ['vue', 'vue-router', 'vue-i18n', '@vueuse/head', '@vueuse/core'],
@@ -137,7 +167,7 @@ export default defineConfig({
         VueDevTools(),
 
         visualizer({
-            open: true, // 自动打开分析页面
+            open: false, // 自动打开分析页面
             filename: 'stats.html' // 输出文件名[2,6](@ref)
         }),
         importToCDN({
@@ -146,9 +176,9 @@ export default defineConfig({
                 { name: 'axios', var: 'axios', path: 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js' },
                 { name: 'element-plus', var: 'ElementPlus', path: 'https://cdn.jsdelivr.net/npm/element-plus/dist/index.full.min.js' },
             ]
-        })
+        }),
     ],
-
+    // @ts-ignore
     test: {
         include: ['test/**/*.test.ts'],
         environment: 'jsdom',
@@ -195,7 +225,7 @@ export default defineConfig({
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
                         if (id.includes('vue-router')) return 'vendor-router';
-                        if (id.includes('vue-i18n')) return'vendor-i18n';
+                        if (id.includes('vue-i18n')) return 'vendor-i18n';
                         return 'vendor'
                     }
                 },

@@ -1,0 +1,22 @@
+{
+  "assets/vendor-408d6ab3.css": {
+    "hash": "7843de520c3f4624a535b58d203f6898",
+    "cdnUrl": "https://cdn.example.com/path/to/your/fileassets/vendor-408d6ab3.css/",
+    "timestamp": 1742986175928
+  },
+  "assets/index-a49db305.css": {
+    "hash": "dfb00fcd096f747345f3237491df146e",
+    "cdnUrl": "https://cdn.example.com/path/to/your/fileassets/index-a49db305.css/",
+    "timestamp": 1742986175930
+  },
+  "assets/index-6fd7dd96.css": {
+    "hash": "3d1a575ea1c93eab11dff4d4cf6623dc",
+    "cdnUrl": "https://cdn.example.com/path/to/your/fileassets/index-6fd7dd96.css/",
+    "timestamp": 1742986175931
+  },
+  "index.html": {
+    "hash": "725c442be093c37cf18ee4fd439dce9b",
+    "cdnUrl": "https://cdn.example.com/path/to/your/fileindex.html/",
+    "timestamp": 1743039445323
+  }
+}
